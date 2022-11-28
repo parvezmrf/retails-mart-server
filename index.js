@@ -11,7 +11,6 @@ const app = express();
 app.use(cors())
 app.use(express.json())
 
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wgjsrij.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -28,7 +27,6 @@ async function run() {
         })
 
 
-
         app.post('/products', async (req, res) => {
             const addprod = req.body;
 
@@ -37,13 +35,11 @@ async function run() {
 
         })
 
-
         app.get('/productsbookings', async (req, res) => {
             const query = {}
             const getproducts = await bookingProductsCollection.find(query).toArray();
             res.send(getproducts)
         })
-
 
         app.post('/productsbookings', async (req, res) => {
             const bookingproducts = req.body;
@@ -61,14 +57,12 @@ async function run() {
 
         })
 
-
         app.get('/category/:id', async (req, res) => {
             const id = req.params.id
             const query = { category: id }
             const getproducts = await productsCollection.find(query).toArray();
             res.send(getproducts)
         })
-
 
 
         app.get('/users', async (req, res) => {
@@ -84,7 +78,7 @@ async function run() {
             res.send(getusers)
         })
 
-        // logged booking
+        // logged user booking
         app.get('/mybooking', async (req, res) => {
             const decoded = req.decoded;
 
@@ -99,10 +93,7 @@ async function run() {
             res.send(reviews);
         })
 
-
-
-
-        // logged user one
+        // logged user only
         app.get('/user', async (req, res) => {
             const decoded = req.decoded;
 
