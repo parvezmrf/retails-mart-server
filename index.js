@@ -31,7 +31,7 @@ async function run() {
 
         app.post('/products', async (req, res) => {
             const addprod = req.body;
-            console.log(addprod);
+
             const result = await productsCollection.insertOne(addprod);
             res.send(result);
 
@@ -47,7 +47,7 @@ async function run() {
 
         app.post('/productsbookings', async (req, res) => {
             const bookingproducts = req.body;
-            console.log(bookingproducts);
+
             const result = await bookingProductsCollection.insertOne(bookingproducts);
             res.send(result);
 
@@ -87,7 +87,7 @@ async function run() {
         // logged booking
         app.get('/mybooking', async (req, res) => {
             const decoded = req.decoded;
-            console.log(decoded)
+
             let query = {};
             if (req.query.email) {
                 query = {
@@ -105,7 +105,7 @@ async function run() {
         // logged user one
         app.get('/user', async (req, res) => {
             const decoded = req.decoded;
-            console.log(decoded)
+
             let query = {};
             if (req.query.email) {
                 query = {
