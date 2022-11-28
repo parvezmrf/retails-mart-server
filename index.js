@@ -18,12 +18,160 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const productsCollection = client.db('retailsMart').collection('products');
+        const bookingProductsCollection = client.db('retailsMart').collection('bookingproducts');
+        const usersCollection = client.db('retailsMart').collection('users');
 
         app.get('/products', async (req, res) => {
             const query = {}
             const getproducts = await productsCollection.find(query).toArray();
             res.send(getproducts)
         })
+
+
+
+        app.post('/products', async (req, res) => {
+            const addprod = req.body;
+            console.log(addprod);
+            const result = await productsCollection.insertOne(addprod);
+            res.send(result);
+
+        })
+
+
+        app.get('/productsbookings', async (req, res) => {
+            const query = {}
+            const getproducts = await bookingProductsCollection.find(query).toArray();
+            res.send(getproducts)
+        })
+
+
+        app.post('/productsbookings', async (req, res) => {
+            const bookingproducts = req.body;
+            console.log(bookingproducts);
+            const result = await bookingProductsCollection.insertOne(bookingproducts);
+            res.send(result);
+
+        })
+
+        app.delete('/productsbookings/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const booking = await bookingProductsCollection.deleteOne(query);
+            res.send(booking);
+
+        })
+
+
+        app.get('/category/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { category: id }
+            const getproducts = await productsCollection.find(query).toArray();
+            res.send(getproducts)
+        })
+
+
+
+        app.get('/users', async (req, res) => {
+            const query = {}
+            const getusers = await usersCollection.find(query).toArray();
+            res.send(getusers)
+        })
+
+        app.get('/users/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { role: id }
+            const getusers = await usersCollection.find(query).toArray();
+            res.send(getusers)
+        })
+
+        // logged booking
+        app.get('/mybooking', async (req, res) => {
+            const decoded = req.decoded;
+            console.log(decoded)
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = bookingProductsCollection.find(query)
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        })
+
+
+
+
+        // logged user one
+        app.get('/user', async (req, res) => {
+            const decoded = req.decoded;
+            console.log(decoded)
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = await usersCollection.findOne(query)
+
+            res.send(cursor);
+        })
+
+
+
+
+
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            res.send(result)
+        })
+
+        app.delete('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await usersCollection.deleteOne(query);
+            res.send(result);
+
+        })
+
+
+
+        app.put('/users/admin/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: {
+                    role: 'admin'
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updateDoc, options)
+            res.send(result)
+        })
+
+        app.put('/users/verify/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: {
+                    profile: 'verified'
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updateDoc, options)
+            res.send(result)
+        })
+
+
+
+
+
+
+
+
+
     }
     finally {
 
