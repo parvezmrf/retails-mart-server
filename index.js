@@ -19,6 +19,8 @@ async function run() {
         const productsCollection = client.db('retailsMart').collection('products');
         const bookingProductsCollection = client.db('retailsMart').collection('bookingproducts');
         const usersCollection = client.db('retailsMart').collection('users');
+        const bookingReportsCollection = client.db('retailsMart').collection('reports');
+        const sponsersCollection = client.db('retailsMart').collection('sponsers');
 
         app.get('/products', async (req, res) => {
             const query = {}
@@ -48,6 +50,39 @@ async function run() {
             res.send(result);
 
         })
+
+        // report
+        app.get('/reportsbookings', async (req, res) => {
+            const query = {}
+            const getproducts = await bookingReportsCollection.find(query).toArray();
+            res.send(getproducts)
+        })
+
+        app.post('/reportsbookings', async (req, res) => {
+            const bookingreports = req.body;
+
+            const result = await bookingReportsCollection.insertOne(bookingreports);
+            res.send(result);
+
+        })
+
+        // sponsers
+        app.get('/sponsers', async (req, res) => {
+            const query = {}
+            const getproducts = await sponsersCollection.find(query).toArray();
+            res.send(getproducts)
+        })
+
+        app.post('/sponsers', async (req, res) => {
+            const bookingreports = req.body;
+
+            const result = await sponsersCollection.insertOne(bookingreports);
+            res.send(result);
+
+        })
+
+
+
 
         app.delete('/productsbookings/:id', async (req, res) => {
             const id = req.params.id;
@@ -80,7 +115,6 @@ async function run() {
 
         // logged user booking
         app.get('/mybooking', async (req, res) => {
-            const decoded = req.decoded;
 
             let query = {};
             if (req.query.email) {
@@ -89,9 +123,33 @@ async function run() {
                 }
             }
             const cursor = bookingProductsCollection.find(query)
-            const reviews = await cursor.toArray();
-            res.send(reviews);
+            const booking = await cursor.toArray();
+            res.send(booking);
         })
+
+        // logged seller myproduct add book
+        app.get('/myproduct', async (req, res) => {
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = productsCollection.find(query)
+            const products = await cursor.toArray();
+            res.send(products);
+        })
+
+        app.delete('/myproduct/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const products = await productsCollection.deleteOne(query);
+            res.send(products);
+
+        })
+
+
+
 
         // logged user only
         app.get('/user', async (req, res) => {
